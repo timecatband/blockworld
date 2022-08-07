@@ -136,16 +136,24 @@ class BlockGame():
     #save_tensor_image(frame, "frame.png")
     
     current_diff = float((target-frame).abs().sum())
-    print("Current diff: " + str(current_diff))
-    print("Max diff: " + str(self.max_diff))
+  #  print("Current diff: " + str(current_diff))
+  #  print("Max diff: " + str(self.max_diff))
     return current_diff/self.max_diff
+  def score_two(self, startState, endState, target):
+      startScore = self.score(target, startState)
+      endScore = self.score(target, endState)
+      finalScore = startScore-endScore
+      return finalScore, endScore
   def get_target(self):   
     return self.tensor_target
   def step(self, action):
     x = action
+    startState = None
+    endState = None
+
     if (self.use_target == True):
      self.blockWorld.draw_cursor = False
-     startScore = self.score(self.tensor_target, self.get_screen())
+     startState = self.get_screen()
     self.blockWorld.act(action)
     lastView = None
     steps = 1
@@ -156,8 +164,8 @@ class BlockGame():
       lastView = self.blockWorld.produce_frame()
     if self.use_target != True:
       return None
-    endScore = self.score(self.tensor_target,self.get_screen())
-    finalScore = startScore-endScore
+    endState = self.get_screen()
+    finalScore, endScore = self.score_two(startState, endState, self.tensor_target)
     if (endScore <= 1.0/255):
       if x == 2:
         finalScore *= 2
