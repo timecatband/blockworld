@@ -15,8 +15,8 @@ import torch.nn
 from PIL import Image
 import IPython.display
 
-SCREEN_WIDTH=256
-SCREEN_HEIGHT=256
+SCREEN_WIDTH=128
+SCREEN_HEIGHT=128
 NUM_ACTIONS=9
 PPM = SCREEN_WIDTH/10.0  # pixels per meter
 TARGET_FPS = 60
