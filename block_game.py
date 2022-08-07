@@ -118,9 +118,10 @@ class BlockGame():
     self.use_target = use_target
     if (use_target == True):
       self.tensor_target = torch.tensor(self.target).permute(2,0,1).float().to(device)/255
+      self.max_diff = (self.tensor_target-self.get_screen()).sum()
+
     self.blockWorld.draw_cursor = False
     # Check in to this if changing base world
-    self.max_diff = (self.tensor_target-self.get_screen()).sum()
     self.blockWorld.draw_cursor = True
     self.blocksAdded = 0
   def reset(self, target):
