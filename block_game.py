@@ -167,7 +167,7 @@ class BlockGame():
   def record(self, videoOut):
     self.blockWorld.record(videoOut)
   def get_screen(self):
-    return torch.tensor(self.blockWorld.produce_frame().astype("float32")).permute(2,0,1)/255
+    return torch.tensor(self.blockWorld.produce_frame().astype("float32")).to(self.device).permute(2,0,1)/255
 
 
 
