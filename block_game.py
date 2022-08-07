@@ -20,7 +20,7 @@ SCREEN_HEIGHT=128
 NUM_ACTIONS=9
 PPM = SCREEN_WIDTH/10.0  # pixels per meter
 TARGET_FPS = 60
-TIME_STEP = 20.0 / TARGET_FPS
+TIME_STEP = 40.0 / TARGET_FPS
 BOX_FRICTION=0.8
 SIMULATE_STEPS=8
 MOVEMENT_MULTIPLIER=0.5
@@ -58,7 +58,7 @@ class BlockWorld:
   def add_block(self, position, size):
     position = (position[0],SCREEN_HEIGHT/PPM-position[1])
     dynamic_body = self.world.CreateDynamicBody(position=position)
-    box = dynamic_body.CreatePolygonFixture(box=size, density=0.1, friction=BOX_FRICTION)
+    box = dynamic_body.CreatePolygonFixture(box=size, density=0.01, friction=BOX_FRICTION)
   def record(self, videoOut):
     self.videoOut = videoOut
 
@@ -118,9 +118,10 @@ class BlockGame():
     self.use_target = use_target
     if (use_target == True):
       self.tensor_target = torch.tensor(self.target).permute(2,0,1).float().to(device)/255
+      self.blockWorld.draw_cursor = False
+
       self.max_diff = (self.tensor_target-self.get_screen()).sum()
 
-    self.blockWorld.draw_cursor = False
     # Check in to this if changing base world
     self.blockWorld.draw_cursor = True
     self.blocksAdded = 0
@@ -131,9 +132,12 @@ class BlockGame():
     if (self.use_target):
       self.tensor_target = torch.tensor(self.target).permute(2,0,1).float().to(self.device)/255
   def score(self, target, frame):
-   # save_tensor_image(target, "target.png")
-   # save_tensor_image(frame, "frame.png")
-    current_diff = abs(float((target-frame).sum()))
+    #save_tensor_image(target, "target.png")
+    #save_tensor_image(frame, "frame.png")
+    
+    current_diff = float((target-frame).abs().sum())
+    print("Current diff: " + str(current_diff))
+    print("Max diff: " + str(self.max_diff))
     return current_diff/self.max_diff
   def get_target(self):   
     return self.tensor_target
@@ -145,7 +149,7 @@ class BlockGame():
     self.blockWorld.act(action)
     lastView = None
     steps = 1
-    if x == 2:
+    if x == 8:
       steps = SIMULATE_STEPS
     
     for i in range(steps):
